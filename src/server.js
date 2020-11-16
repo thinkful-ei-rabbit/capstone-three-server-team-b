@@ -1,14 +1,34 @@
+const config = require('./config');
 const knex = require('knex');
 const app = require('./app');
-const { PORT, DATABASE_URL, NODE_ENV } = require('./config');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server,  {
+  origins: [config.CLIENT_ORIGIN],
+  cors: true,
+});
 
 const db = knex({
   client: 'pg',
-  connection: DATABASE_URL,
+  connection: config.DATABASE_URL,
 });
 
 app.set('db', db);
 
-app.listen(PORT, () =>
-  console.log(`Server running in ${NODE_ENV} mode on ${PORT}`)
-);
+io.sockets.on('connection', (socket) => {
+  // THIS WILL BE IMPORTED FROM SOMEWHERE ELSE
+  console.log('a user connected!');
+
+  socket.on('chatMessage', (message) => {
+    io.emit('messageResponse', message);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('a user disconnected!');
+  });
+}); 
+
+
+
+server.listen(config.PORT, () => {
+  console.log(`listening on ${config.PORT}`);
+});

@@ -3,16 +3,19 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const { NODE_ENV } = require('./config');
+const config = require('./config');
 const authRouter = require('./auth/auth-router');
 const usersRouter = require('./users/users-router');
 const errorHandler = require('./errorHandler');
-
 const app = express();
 
-const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
+const morganOption = config.NODE_ENV === 'production' ? 'tiny' : 'common';
 
-app.use(cors());
+app.use(cors({
+  origin: config.CLIENT_ORIGIN,
+  credentials: true,
+}));
+
 app.use(morgan(morganOption));
 app.use(helmet());
 
@@ -22,9 +25,12 @@ app.use('/api/auth', authRouter);
 // register only
 app.use('/api/users', usersRouter);
 
+
 app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
+
+
 
 app.use(errorHandler);
 
