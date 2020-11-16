@@ -17,8 +17,9 @@ usersRouter.post('/', jsonBodyParser, (req, res, next) => {
 
   if (passwordError) return res.status(400).json({ error: passwordError });
 
-  UsersService.hasUserWithEmail(req.app.get('db'), email)
+  // validate email
 
+  UsersService.hasUserWithEmail(req.app.get('db'), email)
     .then((hasUserWithEmail) => {
       if (hasUserWithEmail)
         return res.status(400).json({ error: 'Email address already taken' });

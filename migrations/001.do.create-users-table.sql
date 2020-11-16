@@ -4,5 +4,5 @@ CREATE TABLE "users" (
   "password" TEXT NOT NULL,
   "playerName" TEXT NOT NULL,
   "avatarLink" TEXT NOT NULL,
-  "date_created" TIMESTAMPTZ
+  "date_created" TIMESTAMPTZ DEFAULT NOW()
 );
