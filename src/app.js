@@ -16,8 +16,12 @@ app.use(cors());
 app.use(morgan(morganOption));
 app.use(helmet());
 
+// log in
 app.use('/api/auth', authRouter);
+
+// register only
 app.use('/api/users', usersRouter);
+
 app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
