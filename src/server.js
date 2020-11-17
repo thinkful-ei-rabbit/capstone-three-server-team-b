@@ -1,10 +1,12 @@
 const config = require('./config');
+const socketHandler = require('./socket/sockethandler');
 const knex = require('knex');
 const app = require('./app');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server,  {
   origins: [config.CLIENT_ORIGIN],
   cors: true,
+  path: '/myownpath',
 });
 
 const db = knex({
@@ -15,20 +17,18 @@ const db = knex({
 app.set('db', db);
 
 io.sockets.on('connection', (socket) => {
-  // THIS WILL BE IMPORTED FROM SOMEWHERE ELSE
-  console.log('a user connected!');
+  // get user by parsing user token ?
+  socketHandler(socket, io); 
 
-  socket.on('chatMessage', (message) => {
-    io.emit('messageResponse', message);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('a user disconnected!');
-  });
-}); 
+  // socket.on('disconnect', (socket) => {
+  //   io.emit('global_message', `${socket[/* something */]} left the server`)
+  // })
+});
 
 
 
 server.listen(config.PORT, () => {
   console.log(`listening on ${config.PORT}`);
 });
+
+module.exports = io;
