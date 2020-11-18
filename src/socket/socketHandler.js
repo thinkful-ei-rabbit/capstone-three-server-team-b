@@ -7,15 +7,18 @@ const socketHandler = (socket, io) => {
 
     /* ================ USER JOIN SERVER START ==============*/
     socket.on('joinServer', (userObj) => {
-        // user entered nickname, while the client
-        // endpoints are behind a private route?
-        socket.nickname = userObj.username;
+        // define socket identity info before join
+        socket.nickname = userObj.playerName;
         socket.roomNumber = userObj.room;
+        socket.player_id = userObj.user_id;
+    //  socket.id is auto generated and should NOT be touched
 
         const currentUser = {
-            nickname: userObj.username,
+            playerName: socket.playerName,
+            player_id: userObj.user_id,
             roomNumber: userObj.room,
-            id: socket.id,
+            socket_id: socket.id, // to communicate via socket
+            avatarLink: userObj.avatarLink,
         };
 
 
@@ -33,18 +36,21 @@ const socketHandler = (socket, io) => {
                 ServerRooms.addPlayerToRoom(userObj.room, currentUser)
             }
         }
-
-
+        // AFTER SERVERROOMS METHODS
+        // ASSUMES SERVERROOMS GOES WELL
         socket.join(userObj.room);
 
-        const users = io.in(userObj.room).sockets.sockets;
+
+        // OR, ServerRooms.rooms[socket.roomNumber].players
+        // const users = io.in(userObj.room).sockets.sockets;
+        // can optimize later
 
         const playersInRoom = [];
-        users.forEach((el) => {
+        ServerRooms.rooms[socket.roomNumber].players.forEach((el) => {
             if (el.roomNumber === userObj.room) {
                 playersInRoom.push({
                     id: el.id,
-                    nickname: el.nickname,
+                    playerName: el.playerName,
                     room: el.roomNumber
                 });
             }
