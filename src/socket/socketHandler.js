@@ -11,10 +11,11 @@ const socketHandler = (socket, io) => {
         socket.nickname = userObj.playerName;
         socket.roomNumber = userObj.room;
         socket.player_id = userObj.user_id;
-    //  socket.id is auto generated and should NOT be touched
+        //  socket.id is auto generated and should NOT be touched
+        // console.log(userObj);
 
         const currentUser = {
-            playerName: socket.playerName,
+            playerName: socket.nickname,
             player_id: userObj.user_id,
             roomNumber: userObj.room,
             socket_id: socket.id, // to communicate via socket
@@ -24,7 +25,7 @@ const socketHandler = (socket, io) => {
 
         if (ServerRooms.rooms[userObj.room] === undefined) {
             ServerRooms.addRoom(userObj.room);
-            ServerRooms.adjustRoomCapacity(userObj.room, true);
+            // ServerRooms.adjustRoomCapacity(userObj.room, true);
             ServerRooms.addPlayerToRoom(userObj.room, currentUser)
         } else {
             if (ServerRooms.rooms[userObj.room].capacity === 4) {
@@ -32,7 +33,7 @@ const socketHandler = (socket, io) => {
                 return;
             } else {
 
-                ServerRooms.adjustRoomCapacity(userObj.room, true);
+                // ServerRooms.adjustRoomCapacity(userObj.room, true);
                 ServerRooms.addPlayerToRoom(userObj.room, currentUser)
             }
         }
@@ -49,7 +50,7 @@ const socketHandler = (socket, io) => {
         ServerRooms.rooms[socket.roomNumber].players.forEach((el) => {
             if (el.roomNumber === userObj.room) {
                 playersInRoom.push({
-                    id: el.id,
+                    id: el.socket_id,
                     playerName: el.playerName,
                     room: el.roomNumber
                 });
@@ -79,11 +80,59 @@ const socketHandler = (socket, io) => {
     socket.on('gather list', (message) => {
         socket.emit('list response', ServerRooms.activeRooms);
     });
+    // ======================= SERVER END =======================
+    // ======================= GAME START =======================
 
+
+
+    // ======================= GAMEPLAY =======================
+
+    // SERVER RESPONSES
+    /*
+    socket.on('request rank from player', requestObj) {
+        const asker = requestObj.user_id;
+        const requested = requestObj.request_id;
+        const reqRank = requestObj.requested_rank;
+
+        does ${requested} have ${reqRank}?
+
+        socket.broadcast.to(requested).emit('rank request from player', {
+            asker, requested, reqRank
+        })
+    }
+
+    socket.on('rank request denial',  () => {
+        requested, asker, reqRank,
+
+        EMIT =========
+        draw top card in deck
+        socket.broadcast.to(asker).emit('go fish', reqObj)
+    })
+    
+    socket.on('rank request accept', (gameObj) => {
+        gameObj = {requested, asker, reqRank, card}
+
+        EMIT =========
+        socket.broadcast.to(asker).emit('correct rank return', gameObj)
+    })
+
+    */
+    // ======================= GAMEPLAY END =======================
+    // ======================= GAME END =======================
+
+
+
+
+
+    
+    // ======================= GAME END =======================
+
+
+    // SERVER DC
     socket.on('disconnect', () => {
         if (socket.roomNumber) {
             ServerRooms.removePlayer(socket.id, socket.roomNumber);
-            ServerRooms.adjustRoomCapacity(socket.roomNumber, false);
+            // ServerRooms.adjustRoomCapacity(socket.roomNumber, false);
             if (ServerRooms.rooms[socket.roomNumber]) {
 
                 io.to(socket.roomNumber).emit('serverResponse', {
@@ -99,7 +148,7 @@ const socketHandler = (socket, io) => {
             }
         }
         // needs to readjust
-        console.log('A user disconnected!');
+        console.log(`${socket.id} disconnected!`);
     });
 
 };
