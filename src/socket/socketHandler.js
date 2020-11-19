@@ -12,7 +12,7 @@ const socketHandler = (socket, io) => {
         socket.roomNumber = userObj.room;
         socket.player_id = userObj.user_id;
         //  socket.id is auto generated and should NOT be touched
-        // console.log(userObj);
+        console.log(userObj);
 
         const currentUser = {
             playerName: socket.nickname,
