@@ -9,7 +9,7 @@ class RoomConstruct {
             capacity: this.findCapacity(id),
             deck: [], // draw card might be deck.shift();
             players: [
-                // {socket.id, socket.nickname, socket.roomNumber}
+                // {socket.id, socket.nickname, socket.roomNumber},
             ],
             // Books
         };
