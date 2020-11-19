@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const ServerRooms = require('./serverRooms');
+const Deck = require('../game/deck/deck');
 
 const socketHandler = (socket, io) => {
 
@@ -86,89 +87,102 @@ const socketHandler = (socket, io) => {
     });
     // ======================= SERVER END =======================
     // ======================= GAME START =======================
-    /*
-    socket.on('shuffle deck and distribute', () => {
-        room, all users
 
-        socket.to(user[i]).emit('', {
-            hand, 
-            otherCardCounts,
-        })
-    })
-
-
-    socket.on('draw top card, () => {
-        asker, room
-         takes ServerRooms[room]
-    })
-
-    */
-
-    // ======================= GAMEPLAY =======================
-
-    // SERVER RESPONSES
+    socket.on('start game', async (players) => {
+        console.log(players);
     
-    socket.on('request rank from player', requestObj => {
-        const asker = requestObj.user_id;
-        const requested = requestObj.requestedId;
-        const rankReq = requestObj.rankReq;
+        const deck = new Deck();
+        // create new deck
+        deck.shuffle();
+        // shuffle new deck
+        console.log(deck);
 
-        console.log(`does ${requested} have a ${rankReq}? Asking now...`)
-
-        socket.broadcast.to(requested).emit('rank request from player', {
-            asker, requested, rankReq
-        });
-    });
-
-   
-    socket.on('rank request denial',  (requestObj) => {
-        const { asker, requested, rankReq, CARD } = requestObj;
-
-        // console.log(requestObj);
-        // EMIT =========
-        // draw top card in deck?
-        socket.broadcast.to(asker).emit('go fish', requestObj);
-    })
-    
-    socket.on('rank request accept', (gameObj) => {
-        const {requested, asker, rankReq, CARD} = gameObj;
-
-        // EMIT =========
-        socket.broadcast.to(asker).emit('correct rank return', gameObj)
-    })
-
-    // ======================= GAMEPLAY END =======================
-    // ======================= GAME END =======================
-
-
-
-
-
-    
-    // ======================= GAME END =======================
-
-
-    // SERVER DC
-    socket.on('disconnect', () => {
-        if (socket.roomNumber) {
-            ServerRooms.removePlayer(socket.id, socket.roomNumber);
-
-            if (ServerRooms.rooms[socket.roomNumber]) {
-
-                io.to(socket.roomNumber).emit('serverResponse', {
-                    message: `${socket.nickname} left the room!`,
-                    players: ServerRooms.rooms[socket.roomNumber].players || [],
-                });
-            } else {
-                io.to(socket.roomNumber).emit('serverResponse', {
-                    message: `${socket.nickname} left the room!`,
-                    players: [],
-                });
-
+        // distribute cards to players
+        for (let i = 0; i < players.length; i++) {
+            const hand = []
+            while (hand.length !== 7) {
+                hand.push(deck.draw());
             }
+        
+            io.to(players[i].id)
+                .emit('game start RESPONSE', hand)
         }
-        console.log(`${socket.id} disconnected!`);
+});
+
+
+/*
+   socket.on('draw top card, () => {
+       asker, room
+        takes ServerRooms[room]
+   })
+
+   */
+
+// ======================= GAMEPLAY =======================
+
+// SERVER RESPONSES
+
+socket.on('request rank from player', requestObj => {
+    const asker = requestObj.user_id;
+    const requested = requestObj.requestedId;
+    const rankReq = requestObj.rankReq;
+
+    console.log(`does ${requested} have a ${rankReq}? Asking now...`)
+
+    socket.broadcast.to(requested).emit('rank request from player', {
+        asker, requested, rankReq
     });
+});
+
+
+socket.on('rank request denial', (requestObj) => {
+    const { asker, requested, rankReq, CARD } = requestObj;
+
+    // console.log(requestObj);
+    // EMIT =========
+    // draw top card in deck?
+    socket.broadcast.to(asker).emit('go fish', requestObj);
+})
+
+socket.on('rank request accept', (gameObj) => {
+    const { requested, asker, rankReq, CARD } = gameObj;
+
+    // EMIT =========
+    socket.broadcast.to(asker).emit('correct rank return', gameObj)
+})
+
+// ======================= GAMEPLAY END =======================
+// ======================= GAME END =======================
+
+
+
+
+
+
+// ======================= GAME END =======================
+
+
+// SERVER DC
+socket.on('disconnect', () => {
+    if (socket.roomNumber) {
+        ServerRooms.removePlayer(socket.id, socket.roomNumber);
+
+        if (ServerRooms.rooms[socket.roomNumber]) {
+
+            io.to(socket.roomNumber).emit('serverResponse', {
+                message: `${socket.nickname} left the room!`,
+                players: ServerRooms.rooms[socket.roomNumber].players || [],
+            });
+        } else {
+            io.to(socket.roomNumber).emit('serverResponse', {
+                message: `${socket.nickname} left the room!`,
+                players: [],
+            });
+
+        }
+    }
+    console.log(`${socket.id} disconnected!`);
+});
 
 };
 
