@@ -83,31 +83,67 @@ const socketHandler = (socket, io) => {
     });
 
     socket.on('gather list', (message) => {
-        socket.emit('list response', ServerRooms.activeRooms);
+        const retObj = {};
+        for (var room in ServerRooms.activeRooms) {
+            if (ServerRooms.activeRooms[room].started === false) {
+                retObj[room] = ServerRooms.activeRooms[room]
+            }
+        }
+
+        socket.emit('list response', retObj);
     });
     // ======================= SERVER END =======================
     // ======================= GAME START =======================
 
     socket.on('start game', async (players) => {
         console.log(players);
+         
+
+        // take room out of active lobbies
+        ServerRooms.activeRooms[socket.roomNumber].started = true;
     
         const deck = new Deck();
         // create new deck
         deck.shuffle();
         // shuffle new deck
-        console.log(deck);
+        // console.log(deck);
 
         // distribute cards to players
         for (let i = 0; i < players.length; i++) {
-            const hand = []
-            while (hand.length !== 7) {
-                hand.push(deck.draw());
+            const hand = {
+                hand: [],
+                otherPlayers: {
+
+                }
+            }
+            while (hand.hand.length < 7) {
+                hand.hand.push(deck.draw());
+            }
+
+            for (let j = 0; j < players.length; j++) {
+                if (players[j].id !== players[i].id) {
+                    hand.otherPlayers[players[j].id] = 7;
+                }
             }
         
+            console.log(hand);
             io.to(players[i].id)
                 .emit('game start RESPONSE', hand)
         }
+
+
+        socket.on('claim seat', (userObj) => {
+            // userObj.players
+            // userObj.player
+            // userObj.e seat
+            // userObj.name
+
+            // io.to(id) LOOP
+            // socket.broadcast.to().emit(resObj)
+        })
 });
+
+
 
 
 /*

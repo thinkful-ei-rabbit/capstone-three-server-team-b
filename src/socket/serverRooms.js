@@ -15,6 +15,7 @@ class RoomConstruct {
         };
         this.activeRooms[id] = {
             capacity: 0,
+            started: false,
         };
     }
 
@@ -54,7 +55,9 @@ class RoomConstruct {
         const indexOfPlayerObj = this.rooms[room].players.indexOf(playerObj);
         if (this.activeRooms[room].capacity === 1) {
             // 1 - 1 = 0, delete rooms
-            delete this.activeRooms[room];
+            if (this.activeRooms[room]) {
+                delete this.activeRooms[room];
+            }
             delete this.rooms[room];
             // return `${user} left Room ${id}, and it was then empty, so it shut down`;
         } else {
