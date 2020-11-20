@@ -97,11 +97,11 @@ const socketHandler = (socket, io) => {
 
     socket.on('start game', async (players) => {
         console.log(players);
-         
+
 
         // take room out of active lobbies
         ServerRooms.activeRooms[socket.roomNumber].started = true;
-    
+
         const deck = new Deck();
         // create new deck
         deck.shuffle();
@@ -125,101 +125,114 @@ const socketHandler = (socket, io) => {
                     hand.otherPlayers[players[j].id] = 7;
                 }
             }
-        
+
             console.log(hand);
             io.to(players[i].id)
                 .emit('game start RESPONSE', hand)
         }
 
-
-        socket.on('claim seat', (userObj) => {
-            // userObj.players
-            // userObj.player
-            // userObj.e seat
-            // userObj.name
-
-            // io.to(id) LOOP
-            // socket.broadcast.to().emit(resObj)
-        })
-});
-
-
-
-
-/*
-   socket.on('draw top card, () => {
-       asker, room
-        takes ServerRooms[room]
-   })
-
-   */
-
-// ======================= GAMEPLAY =======================
-
-// SERVER RESPONSES
-
-socket.on('request rank from player', requestObj => {
-    const asker = requestObj.user_id;
-    const requested = requestObj.requestedId;
-    const rankReq = requestObj.rankReq;
-
-    console.log(`does ${requested} have a ${rankReq}? Asking now...`)
-
-    socket.broadcast.to(requested).emit('rank request from player', {
-        asker, requested, rankReq
     });
-});
 
+    socket.on('claim seat', (userObj) => {
+        // userObj.players
+        // userObj.name
+        // userObj.e seat
+        // userObj.name
+        // console.log(userObj)
 
-socket.on('rank request denial', (requestObj) => {
-    const { asker, requested, rankReq, CARD } = requestObj;
+        for (let i = 0; i < userObj.roomPlayers.length; i++) {
+            const user = userObj.roomPlayers[i];
+            if (user.playerName !== userObj.name) {
+                // console.log(`emitted to ${user.playerName}`);
+                io.to(user.id).emit('seat chosen', {
+                    seat: userObj.seat,
+                    name: userObj.name,
+                    roomPlayers: userObj.roomPlayers,
+                })
+            }
 
-    // console.log(requestObj);
-    // console.log(requestObj);
-    // EMIT =========
-    // draw top card in deck?
-    socket.broadcast.to(asker).emit('go fish', requestObj);
-})
-
-socket.on('rank request accept', (gameObj) => {
-    const { requested, asker, rankReq, CARD } = gameObj;
-
-    // EMIT =========
-    socket.broadcast.to(asker).emit('correct rank return', gameObj)
-})
-
-// ======================= GAMEPLAY END =======================
-// ======================= GAME END =======================
-
-
-
-
-
-
-// ======================= GAME END =======================
-
-
-// SERVER DC
-socket.on('disconnect', () => {
-    if (socket.roomNumber) {
-        ServerRooms.removePlayer(socket.id, socket.roomNumber);
-
-        if (ServerRooms.rooms[socket.roomNumber]) {
-
-            io.to(socket.roomNumber).emit('serverResponse', {
-                message: `${socket.nickname} left the room!`,
-                players: ServerRooms.rooms[socket.roomNumber].players || [],
-            });
-        } else {
-            io.to(socket.roomNumber).emit('serverResponse', {
-                message: `${socket.nickname} left the room!`,
-                players: [],
-            });
 
         }
-    }
-    console.log(`${socket.id} disconnected!`);
-});
+        // socket.broadcast.to().emit(resObj)
+    })
+
+
+
+
+    /*
+       socket.on('draw top card, () => {
+           asker, room
+            takes ServerRooms[room]
+       })
+    
+       */
+
+    // ======================= GAMEPLAY =======================
+
+    // SERVER RESPONSES
+
+    socket.on('request rank from player', requestObj => {
+        const asker = requestObj.user_id;
+        const requested = requestObj.requestedId;
+        const rankReq = requestObj.rankReq;
+
+        console.log(`does ${requested} have a ${rankReq}? Asking now...`)
+
+        socket.broadcast.to(requested).emit('rank request from player', {
+            asker, requested, rankReq
+        });
+    });
+
+
+    socket.on('rank request denial', (requestObj) => {
+        const { asker, requested, rankReq, CARD } = requestObj;
+
+        // console.log(requestObj);
+        // console.log(requestObj);
+        // EMIT =========
+        // draw top card in deck?
+        socket.broadcast.to(asker).emit('go fish', requestObj);
+    })
+
+    socket.on('rank request accept', (gameObj) => {
+        const { requested, asker, rankReq, CARD } = gameObj;
+
+        // EMIT =========
+        socket.broadcast.to(asker).emit('correct rank return', gameObj)
+    })
+
+    // ======================= GAMEPLAY END =======================
+    // ======================= GAME END =======================
+
+
+
+
+
+
+    // ======================= GAME END =======================
+
+
+    // SERVER DC
+    socket.on('disconnect', () => {
+        if (socket.roomNumber) {
+            ServerRooms.removePlayer(socket.id, socket.roomNumber);
+
+            if (ServerRooms.rooms[socket.roomNumber]) {
+
+                io.to(socket.roomNumber).emit('serverResponse', {
+                    message: `${socket.nickname} left the room!`,
+                    players: ServerRooms.rooms[socket.roomNumber].players || [],
+                });
+            } else {
+                io.to(socket.roomNumber).emit('serverResponse', {
+                    message: `${socket.nickname} left the room!`,
+                    players: [],
+                });
+
+            }
+        }
+        console.log(`${socket.id} disconnected!`);
+    });
 
 };
 
