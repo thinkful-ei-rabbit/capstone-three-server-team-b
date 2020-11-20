@@ -175,6 +175,7 @@ socket.on('rank request denial', (requestObj) => {
     const { asker, requested, rankReq, CARD } = requestObj;
 
     // console.log(requestObj);
+    // console.log(requestObj);
     // EMIT =========
     // draw top card in deck?
     socket.broadcast.to(asker).emit('go fish', requestObj);
