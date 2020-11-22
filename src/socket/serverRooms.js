@@ -11,7 +11,9 @@ class RoomConstruct {
             players: [
                 // {socket.id, socket.nickname, socket.roomNumber},
             ],
-            // Books
+            books: {
+                // id: count of books
+            }
         };
         this.activeRooms[id] = {
             capacity: 0,
