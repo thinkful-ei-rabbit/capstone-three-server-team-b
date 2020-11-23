@@ -13,7 +13,7 @@ const socketHandler = (socket, io) => {
         socket.roomNumber = userObj.room;
         socket.player_id = userObj.user_id;
         //  socket.id is auto generated and should NOT be touched
-        // console.log(userObj);
+        console.log(userObj);
 
         const currentUser = {
             playerName: socket.nickname,
@@ -79,7 +79,7 @@ const socketHandler = (socket, io) => {
 
     socket.on('serverMessage', (userObj) => {
         // userObj needs username and value in the future
-        io.to(userObj.room).emit('messageResponse', userObj.value);
+        io.to(userObj.room).emit('messageResponse', userObj,);
     });
 
     socket.on('gather list', (message) => {
