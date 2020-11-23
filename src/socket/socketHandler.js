@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const ServerRooms = require('./serverRooms');
+const Deck = require('../game/deck/deck');
 
 const socketHandler = (socket, io) => {
 
@@ -82,32 +83,94 @@ const socketHandler = (socket, io) => {
     });
 
     socket.on('gather list', (message) => {
-        socket.emit('list response', ServerRooms.activeRooms);
+        const retObj = {};
+        for (var room in ServerRooms.activeRooms) {
+            if (ServerRooms.activeRooms[room].started === false) {
+                retObj[room] = ServerRooms.activeRooms[room]
+            }
+        }
+
+        socket.emit('list response', retObj);
     });
     // ======================= SERVER END =======================
     // ======================= GAME START =======================
+
+    socket.on('start game', async (players) => {
+        console.log(players);
+
+
+        // take room out of active lobbies
+        ServerRooms.activeRooms[socket.roomNumber].started = true;
+
+        const deck = new Deck();
+        // create new deck
+        deck.shuffle();
+        // shuffle new deck
+        // console.log(deck);
+
+        // distribute cards to players
+        for (let i = 0; i < players.length; i++) {
+            const hand = {
+                hand: [],
+                otherPlayers: {
+
+                }
+            }
+            while (hand.hand.length < 7) {
+                hand.hand.push(deck.draw());
+            }
+
+            for (let j = 0; j < players.length; j++) {
+                if (players[j].id !== players[i].id) {
+                    hand.otherPlayers[players[j].id] = 7;
+                }
+            }
+
+            console.log(hand);
+            io.to(players[i].id)
+                .emit('game start RESPONSE', hand)
+        }
+
+    });
+
+    socket.on('claim seat', (userObj) => {
+        // userObj.players
+        // userObj.name
+        // userObj.e seat
+        // userObj.name
+        // console.log(userObj)
+
+        for (let i = 0; i < userObj.roomPlayers.length; i++) {
+            const user = userObj.roomPlayers[i];
+            if (user.playerName !== userObj.name) {
+                // console.log(`emitted to ${user.playerName}`);
+                io.to(user.id).emit('seat chosen', {
+                    seat: userObj.seat,
+                    name: userObj.name,
+                    roomPlayers: userObj.roomPlayers,
+                })
+            }
+
+
+        }
+        // socket.broadcast.to().emit(resObj)
+    })
+
+
+
+
     /*
-    socket.on('shuffle deck and distribute', () => {
-        room, all users
-
-        socket.to(user[i]).emit('', {
-            hand, 
-            otherCardCounts,
-        })
-    })
-
-
-    socket.on('draw top card, () => {
-        asker, room
-         takes ServerRooms[room]
-    })
-
-    */
+       socket.on('draw top card, () => {
+           asker, room
+            takes ServerRooms[room]
+       })
+    
+       */
 
     // ======================= GAMEPLAY =======================
 
     // SERVER RESPONSES
-    
+
     socket.on('request rank from player', requestObj => {
         const asker = requestObj.user_id;
         const requested = requestObj.requestedId;
@@ -120,18 +183,19 @@ const socketHandler = (socket, io) => {
         });
     });
 
-   
-    socket.on('rank request denial',  (requestObj) => {
+
+    socket.on('rank request denial', (requestObj) => {
         const { asker, requested, rankReq, CARD } = requestObj;
 
+        // console.log(requestObj);
         // console.log(requestObj);
         // EMIT =========
         // draw top card in deck?
         socket.broadcast.to(asker).emit('go fish', requestObj);
     })
-    
+
     socket.on('rank request accept', (gameObj) => {
-        const {requested, asker, rankReq, CARD} = gameObj;
+        const { requested, asker, rankReq, CARD } = gameObj;
 
         // EMIT =========
         socket.broadcast.to(asker).emit('correct rank return', gameObj)
@@ -144,7 +208,7 @@ const socketHandler = (socket, io) => {
 
 
 
-    
+
     // ======================= GAME END =======================
 
 
