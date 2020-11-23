@@ -267,7 +267,24 @@ const socketHandler = (socket, io) => {
     })
     // ======================= GAMEPLAY END =======================
     // ======================= GAME END =======================
+    socket.on('book found', (booksObj) => {
+        // check to see if all books are found
 
+        // add books to room
+
+        // ServerRooms.rooms[socket.roomNumber].books.length > 12
+
+
+        // if so, we'll end the game
+        // io.to(room).emit('game end', someInfo)
+
+
+
+        // and if not, continue game
+
+        // emit to accomplish:
+        // update state of all players with the user's books array
+    })
 
 
 
