@@ -53,7 +53,8 @@ const socketHandler = (socket, io) => {
                 playersInRoom.push({
                     id: el.socket_id,
                     playerName: el.playerName,
-                    room: el.roomNumber
+                    room: el.roomNumber,
+                    avatarLink: el.avatarLink,
                 });
             }
         });
@@ -120,11 +121,11 @@ const socketHandler = (socket, io) => {
                 hand.hand.push(deck.draw());
             }
 
-            for (let j = 0; j < players.length; j++) {
-                if (players[j].id !== players[i].id) {
-                    hand.otherPlayers[players[j].id] = 7;
-                }
-            }
+            // for (let j = 0; j < players.length; j++) {
+            //     if (players[j].id !== players[i].id) {
+            //         hand.otherPlayers[players[j].id] = 7;
+            //     }
+            // }
 
             io.to(players[i].id)
                 .emit('game start RESPONSE', hand);
@@ -177,29 +178,34 @@ const socketHandler = (socket, io) => {
         // socket.broadcast.to().emit(resObj)
     })
 
-    socket.on('book found', (requestObj) => {
-        const booksForPlayerInRoom = ServerRooms.rooms[socket.roomNumber].books[socket.id];
-        if (booksForPlayerInRoom === undefined) {
-            booksForPlayerInRoom = 1;
-        }
-        // assume player has a book? client validate or server validate?
-        // probably client
+    // socket.on('book found', (requestObj) => {
+    //     const booksForPlayerInRoom = ServerRooms.rooms[socket.roomNumber].books[socket.id];
+    //     if (booksForPlayerInRoom === undefined) {
+    //         booksForPlayerInRoom = 1;
+    //     }
+    //     // assume player has a book? client validate or server validate?
+    //     // probably client
 
-        // user user context info to update database with a book found?
+    //     // user user context info to update database with a book found?
 
-        booksForPlayerInRoom += 1;
+    //     booksForPlayerInRoom += 1;
 
 
 
-    })
+    // })
 
-    socket.on('draw a card from the deck', () => {
+    socket.on('draw a card from the deck', (userObj) => {
+        const {cardCount, playerName} = userObj;
         const card = ServerRooms.rooms[socket.roomNumber].deck.draw();
 
         if (!card) {
             socket.emit('draw card denied', 'Deck empty')
         } else {
             socket.emit('draw card fulfilled', { card })
+            io.to(socket.roomNumber).emit('update other player card count', {
+                newCount: cardCount + 1,
+                playerName: playerName,
+            });
         }
 
     })
@@ -211,33 +217,45 @@ const socketHandler = (socket, io) => {
     // SERVER RESPONSES
 
     socket.on('request rank from player', requestObj => {
-        const asker = requestObj.user_id;
-        const requested = requestObj.requestedId;
+        const asker = requestObj.asker;
+        const requested = requestObj.requested;
         const rankReq = requestObj.rankReq;
 
-        console.log(`does ${requested} have a ${rankReq}? Asking now...`)
+        // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
+        io.to(socket.roomNumber).emit('messageResponse', `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`);
 
-        socket.broadcast.to(requested).emit('rank request from player', {
-            asker, requested, rankReq
-        });
+
+        socket.broadcast.to(requested.requestedId).emit('rank request from player', requestObj);
     });
 
 
     socket.on('rank request denial', (requestObj) => {
         const { asker, requested, rankReq, CARD } = requestObj;
 
-        // console.log(requestObj);
-        // console.log(requestObj);
-        // EMIT =========
-        // draw top card in deck?
-        socket.broadcast.to(asker).emit('go fish', requestObj);
+        // message update
+        io.to(socket.roomNumber).emit('messageResponse', `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`);
+
+        socket.broadcast.to(asker.user_id).emit('go fish', requestObj);
     })
 
     socket.on('rank request accept', (gameObj) => {
-        const { requested, asker, rankReq, CARD } = gameObj;
+        const { requested, asker, rankReq, CARD, cardCount } = gameObj;
+
+        // message update
+        io.to(socket.roomNumber).emit('messageResponse', `${requested.requestedName} had a  ${rankReq}, good guess ${asker.name}!`);
+        // card count update for requested
+        io.to(socket.roomNumber).emit('update other player card count', {
+            newCount: cardCount,
+            playerName: requested.requestedName,
+        });
+        // card count update for asker
+        io.to(socket.roomNumber).emit('update other player card count', {
+            newCount: asker.currentCount + 1,
+            playerName: asker.name,
+        } );
 
         // EMIT =========
-        socket.broadcast.to(asker).emit('correct rank return', gameObj)
+        socket.broadcast.to(asker.user_id).emit('correct rank return', gameObj)
     })
 
 
@@ -268,12 +286,17 @@ const socketHandler = (socket, io) => {
     // ======================= GAMEPLAY END =======================
     // ======================= GAME END =======================
     socket.on('book found', (booksObj) => {
+        const { cardsInBook, playerName, playerCardCount } = booksObj;
+
         // check to see if all books are found
 
         // add books to room
 
         // ServerRooms.rooms[socket.roomNumber].books.length > 12
-
+        io.to(socket.roomNumber).emit('update other player card count', {
+            newCount: playerCardCount,
+            playerName: playerName,
+        } );
 
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
