@@ -96,7 +96,7 @@ const socketHandler = (socket, io) => {
     // ======================= GAME START =======================
 
     socket.on('start game', async (players) => {
-        console.log(players);
+        // console.log(players);
 
 
         // take room out of active lobbies
@@ -126,9 +126,30 @@ const socketHandler = (socket, io) => {
                 }
             }
 
-            console.log(hand);
             io.to(players[i].id)
-                .emit('game start RESPONSE', hand)
+                .emit('game start RESPONSE', hand);
+        }
+
+
+        // set deck after emits
+        ServerRooms.rooms[socket.roomNumber].deck = deck;
+        // started games arent displayed in server list
+        ServerRooms.activeRooms[socket.roomNumber].started = true;
+        // set first turn randomly
+        const randomIndex = Math.floor(Math.random() * players.length);
+        const randomID = players[randomIndex].id;
+        // io.to(players[randomIndex].id).emit('your turn');
+        console.log(players);
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].id === randomID) {
+                // emit your turn
+                io.to(players[i].id).emit('your turn');
+            } else {
+                // emit other player turn, give name of player
+                io.to(players[i].id).emit('other player turn', {
+                    playerName: players[randomIndex].playerName
+                })
+            }
         }
 
     });
@@ -156,16 +177,34 @@ const socketHandler = (socket, io) => {
         // socket.broadcast.to().emit(resObj)
     })
 
+    socket.on('book found', (requestObj) => {
+        const booksForPlayerInRoom = ServerRooms.rooms[socket.roomNumber].books[socket.id];
+        if (booksForPlayerInRoom === undefined) {
+            booksForPlayerInRoom = 1;
+        }
+        // assume player has a book? client validate or server validate?
+        // probably client
+
+        // user user context info to update database with a book found?
+
+        booksForPlayerInRoom += 1;
 
 
 
-    /*
-       socket.on('draw top card, () => {
-           asker, room
-            takes ServerRooms[room]
-       })
-    
-       */
+    })
+
+    socket.on('draw a card from the deck', () => {
+        const card = ServerRooms.rooms[socket.roomNumber].deck.draw();
+
+        if (!card) {
+            socket.emit('draw card denied', 'Deck empty')
+        } else {
+            socket.emit('draw card fulfilled', { card })
+        }
+
+    })
+
+
 
     // ======================= GAMEPLAY =======================
 
@@ -201,6 +240,31 @@ const socketHandler = (socket, io) => {
         socket.broadcast.to(asker).emit('correct rank return', gameObj)
     })
 
+
+    socket.on('next turn', () => {
+        const serverPlayers = ServerRooms.rooms[socket.roomNumber].players;
+        
+        const player = serverPlayers.find(el => {
+            return el.socket_id === socket.id;
+        })
+        const indexOfPlayer = serverPlayers.indexOf(player);
+        const overMaxIndexCheck = (indexOfPlayer + 1 >= serverPlayers.length) ? 0 : indexOfPlayer + 1;
+        const newPlayer = serverPlayers[overMaxIndexCheck];
+        // console.log(player);
+        // console.log(newPlayer);
+
+        for (let i = 0; i < serverPlayers.length; i++) {
+            if (serverPlayers[i].socket_id == newPlayer.socket_id) {
+                // emit your turn
+                io.to(newPlayer.socket_id).emit('your turn');
+            } else {
+                // emit other player turn, give name of player
+                io.to(serverPlayers[i].socket_id).emit('other player turn', {
+                    playerName: newPlayer.playerName
+                })
+            }
+        }
+    })
     // ======================= GAMEPLAY END =======================
     // ======================= GAME END =======================
 

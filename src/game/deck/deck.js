@@ -13,12 +13,16 @@ module.exports = class Deck {
       this.cards[newIndex] = this.cards[i];
       this.cards[i] = oldValue;
     }
-    console.log('shuffled');
+
     return this.cards;
   }
 
   draw() {
-    return this.cards.shift();
+    if (this.cards.length) {
+      return this.cards.shift();
+    } else {
+      return;
+    }
   }
 }
 
