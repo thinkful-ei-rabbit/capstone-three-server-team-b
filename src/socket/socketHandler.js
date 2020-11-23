@@ -79,7 +79,7 @@ const socketHandler = (socket, io) => {
 
     socket.on('serverMessage', (userObj) => {
         // userObj needs username and value in the future
-        io.to(userObj.room).emit('messageResponse', userObj.value);
+        io.to(userObj.room).emit('messageResponse', userObj,);
     });
 
     socket.on('gather list', (message) => {
