@@ -20,6 +20,7 @@ app.set('db', db);
 io.sockets.on('connection', (socket) => {
   // get user by parsing user token ?
   socketHandler(socket, io); 
+  console.log('connected to socket')
 
   // socket.on('disconnect', (socket) => {
   //   io.emit('global_message', `${socket[/* something */]} left the server`)
