@@ -295,6 +295,17 @@ const socketHandler = (socket, io) => {
     // ======================= GAMEPLAY END =======================
     socket.on('book found', (booksObj) => {
         const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+
+        for (let i = 0; i < playerBooks.length; i++) {
+            const roomBooks = ServerRooms.rooms[socket.roomNumber].books;
+            // put each card in book set
+            if (roomBooks[socket.nickname]) {
+                roomBooks[socket.nickname].push(playerBooks[i]);
+            } else {
+                roomBooks[socket.nickname] = [playerBooks[i]];
+            }
+           
+        }
         
         // check to see if all books are found
         // cards taken out of hand, do something with it?
@@ -314,7 +325,12 @@ const socketHandler = (socket, io) => {
         
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
-        
+        if (ServerRooms.rooms[socket.roomNumber].books[socket.nickname].length > 12) {
+            console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
+            // 3 sets placed or more
+            // all books stored client side, so just call display
+            io.to(socket.roomNumber).emit('game end');
+        }
         
         
         // and if not, continue game
