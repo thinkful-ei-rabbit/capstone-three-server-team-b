@@ -13,7 +13,7 @@ const socketHandler = (socket, io) => {
         socket.roomNumber = userObj.room;
         socket.player_id = userObj.user_id;
         //  socket.id is auto generated and should NOT be touched
-        console.log(userObj);
+        // console.log(userObj);
 
         const currentUser = {
             playerName: socket.nickname,
@@ -80,7 +80,7 @@ const socketHandler = (socket, io) => {
 
     socket.on('serverMessage', (userObj) => {
         // userObj needs username and value in the future
-        io.to(userObj.room).emit('messageResponse', userObj,);
+        io.to(userObj.room).emit('messageResponse', userObj);
     });
 
     socket.on('gather list', (message) => {
@@ -140,7 +140,7 @@ const socketHandler = (socket, io) => {
         const randomIndex = Math.floor(Math.random() * players.length);
         const randomID = players[randomIndex].id;
         // io.to(players[randomIndex].id).emit('your turn');
-        console.log(players);
+        // console.log(players);
         for (let i = 0; i < players.length; i++) {
             if (players[i].id === randomID) {
                 // emit your turn
@@ -222,7 +222,10 @@ const socketHandler = (socket, io) => {
         const rankReq = requestObj.rankReq;
 
         // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
-        io.to(socket.roomNumber).emit('messageResponse', `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`);
+        io.to(socket.roomNumber).emit('messageResponse', {
+        user: 'Server Message',
+        value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`
+        })
 
 
         socket.broadcast.to(requested.requestedId).emit('rank request from player', requestObj);
@@ -233,7 +236,10 @@ const socketHandler = (socket, io) => {
         const { asker, requested, rankReq, CARD } = requestObj;
 
         // message update
-        io.to(socket.roomNumber).emit('messageResponse', `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`);
+        io.to(socket.roomNumber).emit('messageResponse', {
+          user: 'Server Message',
+          value: `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`, 
+        })
 
         socket.broadcast.to(asker.user_id).emit('go fish', requestObj);
     })
@@ -242,7 +248,10 @@ const socketHandler = (socket, io) => {
         const { requested, asker, rankReq, CARD, cardCount } = gameObj;
 
         // message update
-        io.to(socket.roomNumber).emit('messageResponse', `${requested.requestedName} had a  ${rankReq}, good guess ${asker.name}!`);
+        io.to(socket.roomNumber).emit('messageResponse', {
+            user: 'Server Message',
+            value: `${requested.requestedName} had a  ${rankReq}, good guess ${asker.name}!`
+        });
         // card count update for requested
         io.to(socket.roomNumber).emit('update other player card count', {
             newCount: cardCount,
@@ -284,35 +293,41 @@ const socketHandler = (socket, io) => {
         }
     })
     // ======================= GAMEPLAY END =======================
-    // ======================= GAME END =======================
     socket.on('book found', (booksObj) => {
-        const { cardsInBook, playerName, playerCardCount } = booksObj;
-
+        const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+        
         // check to see if all books are found
-
+        // cards taken out of hand, do something with it?
+        
+        socket.to(socket.roomNumber).emit('update other player books', {
+            playerName,
+            playerBooks,
+        })
+        
         // add books to room
-
+        
         // ServerRooms.rooms[socket.roomNumber].books.length > 12
         io.to(socket.roomNumber).emit('update other player card count', {
             newCount: playerCardCount,
             playerName: playerName,
-        } );
-
+        });
+        
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
-
-
-
+        
+        
+        
         // and if not, continue game
 
         // emit to accomplish:
         // update state of all players with the user's books array
     })
-
-
-
-
-
+    // ======================= GAME END =======================
+    
+    
+    
+    
+    
     // ======================= GAME END =======================
 
 
