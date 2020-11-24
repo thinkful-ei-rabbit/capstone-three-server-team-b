@@ -326,11 +326,7 @@ const socketHandler = (socket, io) => {
             newCount: playerCardCount,
             playerName: playerName,
         });
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 32265399c39b05b41e3df92ea63639b5cf89f7ef
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
         if (ServerRooms.rooms[socket.roomNumber].books[socket.nickname].length > 12) {
