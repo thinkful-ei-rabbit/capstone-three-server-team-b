@@ -83,6 +83,10 @@ const socketHandler = (socket, io) => {
         io.to(userObj.room).emit('messageResponse', userObj);
     });
 
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('typing', data)
+    })
+
     socket.on('gather list', (message) => {
         const retObj = {};
         for (var room in ServerRooms.activeRooms) {
@@ -195,7 +199,7 @@ const socketHandler = (socket, io) => {
     // })
 
     socket.on('draw a card from the deck', (userObj) => {
-        const {cardCount, playerName} = userObj;
+        const { cardCount, playerName } = userObj;
         const card = ServerRooms.rooms[socket.roomNumber].deck.draw();
 
         if (!card) {
@@ -261,7 +265,7 @@ const socketHandler = (socket, io) => {
         io.to(socket.roomNumber).emit('update other player card count', {
             newCount: asker.currentCount + 1,
             playerName: asker.name,
-        } );
+        });
 
         // EMIT =========
         socket.broadcast.to(asker.user_id).emit('correct rank return', gameObj)
@@ -270,7 +274,7 @@ const socketHandler = (socket, io) => {
 
     socket.on('next turn', () => {
         const serverPlayers = ServerRooms.rooms[socket.roomNumber].players;
-        
+
         const player = serverPlayers.find(el => {
             return el.socket_id === socket.id;
         })
