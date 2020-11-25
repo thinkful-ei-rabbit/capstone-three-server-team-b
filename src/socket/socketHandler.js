@@ -296,13 +296,19 @@ const socketHandler = (socket, io) => {
     socket.on('book found', (booksObj) => {
         const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
 
+        if (!ServerRooms.rooms[socket.roomNumber].bookCount) {
+            ServerRooms.rooms[socket.roomNumber].bookCount = 0;
+        }
+
         for (let i = 0; i < playerBooks.length; i++) {
-            const roomBooks = ServerRooms.rooms[socket.roomNumber].books;
+            const roomBooksForPlayer = ServerRooms.rooms[socket.roomNumber].books;
             // put each card in book set
-            if (roomBooks[socket.nickname]) {
-                roomBooks[socket.nickname].push(playerBooks[i]);
+            if (roomBooksForPlayer[socket.nickname]) {
+                roomBooksForPlayer[socket.nickname].push(playerBooks[i]);
+                ServerRooms.rooms[socket.roomNumber].bookCount++;
             } else {
-                roomBooks[socket.nickname] = [playerBooks[i]];
+                roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
+                ServerRooms.rooms[socket.roomNumber].bookCount++;
             }
            
         }
@@ -325,8 +331,8 @@ const socketHandler = (socket, io) => {
         
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
-        if (ServerRooms.rooms[socket.roomNumber].books[socket.nickname].length > 12) {
-            console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
+        if (ServerRooms.rooms[socket.roomNumber].bookCount.length > 12) {
+            // console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
             // 3 sets placed or more
             // all books stored client side, so just call display
             io.to(socket.roomNumber).emit('game end');
