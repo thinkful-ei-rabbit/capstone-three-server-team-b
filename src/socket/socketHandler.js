@@ -337,6 +337,10 @@ const socketHandler = (socket, io) => {
             playerName: playerName,
         });
 
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 5d44ef9f9c53fcda4984081a32c29537c6cf054f
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
         if (bookCountInRoom.length > 12) {

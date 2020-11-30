@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const knex = require('knex');
 const jwt = require('jsonwebtoken');
 const supertest = require('supertest');
@@ -72,6 +73,8 @@ describe('Auth Endpoints', function () {
       const expectedToken = jwt.sign(
         {
           user_id: testUser.id,
+          playerName: testUser.playerName,
+          avatarLink: testUser.avatarLink
         },
         process.env.JWT_SECRET,
         {
