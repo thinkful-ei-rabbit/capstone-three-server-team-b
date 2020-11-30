@@ -334,10 +334,7 @@ const socketHandler = (socket, io) => {
             newCount: playerCardCount,
             playerName: playerName,
         });
-<<<<<<< HEAD
 
-=======
->>>>>>> 7a357c232c2a2236ff1cd4bf2090609c01b6bf92
         
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
