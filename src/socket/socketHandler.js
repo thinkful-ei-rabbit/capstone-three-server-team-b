@@ -1,3 +1,5 @@
+const knex = require('knex');
+const GameService = require('../endGame/endGame');
 const { Server } = require('socket.io');
 const ServerRooms = require('./serverRooms');
 const Deck = require('../game/deck/deck');
@@ -227,8 +229,8 @@ const socketHandler = (socket, io) => {
 
         // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
         io.to(socket.roomNumber).emit('messageResponse', {
-        user: 'Server Message',
-        value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`
+            user: 'Server Message',
+            value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`
         })
 
 
@@ -241,8 +243,8 @@ const socketHandler = (socket, io) => {
 
         // message update
         io.to(socket.roomNumber).emit('messageResponse', {
-          user: 'Server Message',
-          value: `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`, 
+            user: 'Server Message',
+            value: `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`,
         })
 
         socket.broadcast.to(asker.user_id).emit('go fish', requestObj);
@@ -316,46 +318,60 @@ const socketHandler = (socket, io) => {
                 roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
                 bookCountInRoom++;
             }
-           
+
         }
-        
+
         // check to see if all books are found
         // cards taken out of hand, do something with it?
-        
+
         socket.to(socket.roomNumber).emit('update other player books', {
             playerName,
             playerBooks,
         })
-        
+
         // add books to room
-        
+
         // ServerRooms.rooms[socket.roomNumber].books.length > 12
         io.to(socket.roomNumber).emit('update other player card count', {
             newCount: playerCardCount,
             playerName: playerName,
         });
-        
+
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
         if (bookCountInRoom.length > 12) {
             // console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
             // 3 sets placed or more
             // all books stored client side, so just call display
+
+            // ======================= GAME END =======================
             io.to(socket.roomNumber).emit('game end');
         }
-        
-        
-        // and if not, continue game
-
-        // emit to accomplish:
-        // update state of all players with the user's books array
     })
-    // ======================= GAME END =======================
-    
-    
-    
-    
-    
+
+    socket.on('game end database update', (userObj) => {
+        const { user_id, booksCollected, win } = userObj;
+
+
+        const db = knex({
+            client: 'pg',
+            connection: config.DATABASE_URL,
+        });
+        // update user table with new info
+        // if win true, add 1 to wins
+        if (win) {
+            GameService.updatePlayerWin(db, {
+                user_id, booksCollected,
+            })
+        } else {
+            GameService.updatePlayerLoss(db, {
+                user_id, booksCollected,
+            })
+        }
+    })
+
+
+
     // ======================= GAME END =======================
     // SERVER DC
     socket.on('disconnect', () => {

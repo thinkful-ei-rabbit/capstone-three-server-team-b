@@ -15,6 +15,17 @@ const UsersService = {
       .insert(newUser)
       .into('users')
       .returning('*')
+      .then(async (user) => {
+        console.log(user);
+        await db
+          .insert({
+            user_id: user[0].id,
+            total_wins: 0,
+            books_collected: 0,
+          })
+          .into('user_scores');
+        return user;
+      })
       .then(([user]) => user);
   },
   validatePassword(password) {
