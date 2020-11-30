@@ -301,7 +301,7 @@ const socketHandler = (socket, io) => {
     // ======================= GAMEPLAY END =======================
     socket.on('book found', (booksObj) => {
         const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
-        const bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
+        let bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
 
         if (!bookCountInRoom) {
             bookCountInRoom = 0;
