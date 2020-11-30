@@ -1,5 +1,5 @@
 const config = require('./config');
-const socketHandler = require('./socket/sockethandler');
+const socketHandler = require('./socket/socketHandler.js');
 const knex = require('knex');
 const app = require('./app');
 const server = require('http').createServer(app);
@@ -20,11 +20,7 @@ app.set('db', db);
 io.sockets.on('connection', (socket) => {
   // get user by parsing user token ?
   socketHandler(socket, io); 
-  console.log('connected to socket')
-
-  // socket.on('disconnect', (socket) => {
-  //   io.emit('global_message', `${socket[/* something */]} left the server`)
-  // })
+  console.log('connected to socket');
 });
 
 

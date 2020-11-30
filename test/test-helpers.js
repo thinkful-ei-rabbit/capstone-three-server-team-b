@@ -15,33 +15,33 @@ function makeUsersArray() {
     {
       id: 1,
       email: 'test-user-1@gmail.com',
-      first_name: 'First1',
-      last_name: 'Last1',
       password: 'password',
+      playerName: 'First1',
+      avatarLink: 'Last1',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
       id: 2,
       email: 'test-user-2@gmail.com',
-      first_name: 'First2',
-      last_name: 'Last2',
       password: 'password',
+      playerName: 'First2',
+      avatarLink: 'Last2',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
       id: 3,
       email: 'test-user-3@gmail.com',
-      first_name: 'First3',
-      last_name: 'Last3',
       password: 'password',
+      playerName: 'First3',
+      avatarLink: 'Last3',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
       id: 4,
       email: 'test-user-4@gmail.com',
-      first_name: 'First4',
-      last_name: 'Last4',
       password: 'password',
+      playerName: 'First4',
+      avatarLink: 'Last4',
       date_created: '2029-01-22T16:28:32.615Z',
     },
   ];
@@ -66,10 +66,17 @@ function seedUsers(db, users) {
 }
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-  const token = jwt.sign({ user_id: user.id }, secret, {
-    subject: user.email,
-    algorithm: 'HS256',
-  });
+  const token = jwt.sign(
+    {
+      user_id: user.id
+    },
+    secret,
+    {
+      subject: user.email,
+      expiresIn: process.env.JWT_EXPIRY,
+      algorithm: 'HS256',
+    }
+  );
   return `Bearer ${token}`;
 }
 

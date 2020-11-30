@@ -299,14 +299,22 @@ const socketHandler = (socket, io) => {
     // ======================= GAMEPLAY END =======================
     socket.on('book found', (booksObj) => {
         const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+        const bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
+
+        if (!bookCountInRoom) {
+            bookCountInRoom = 0;
+        }
+
+        const roomBooksForPlayer = ServerRooms.rooms[socket.roomNumber].books;
 
         for (let i = 0; i < playerBooks.length; i++) {
-            const roomBooks = ServerRooms.rooms[socket.roomNumber].books;
             // put each card in book set
-            if (roomBooks[socket.nickname]) {
-                roomBooks[socket.nickname].push(playerBooks[i]);
+            if (roomBooksForPlayer[socket.nickname]) {
+                roomBooksForPlayer[socket.nickname].push(playerBooks[i]);
+                bookCountInRoom++;
             } else {
-                roomBooks[socket.nickname] = [playerBooks[i]];
+                roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
+                bookCountInRoom++;
             }
            
         }
@@ -326,12 +334,15 @@ const socketHandler = (socket, io) => {
             newCount: playerCardCount,
             playerName: playerName,
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7a357c232c2a2236ff1cd4bf2090609c01b6bf92
         
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
-        if (ServerRooms.rooms[socket.roomNumber].books[socket.nickname].length > 12) {
-            console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
+        if (bookCountInRoom.length > 12) {
+            // console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
             // 3 sets placed or more
             // all books stored client side, so just call display
             io.to(socket.roomNumber).emit('game end');
@@ -350,8 +361,6 @@ const socketHandler = (socket, io) => {
     
     
     // ======================= GAME END =======================
-
-
     // SERVER DC
     socket.on('disconnect', () => {
         if (socket.roomNumber) {
