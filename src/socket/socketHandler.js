@@ -339,7 +339,7 @@ const socketHandler = (socket, io) => {
 
         // if so, we'll end the game
         // io.to(room).emit('game end', someInfo)
-        if (bookCountInRoom.length > 12) {
+        if (bookCountInRoom > 5) {
             // console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
             // 3 sets placed or more
             // all books stored client side, so just call display
