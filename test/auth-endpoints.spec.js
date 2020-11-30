@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const knex = require('knex');
 const jwt = require('jsonwebtoken');
 const supertest = require('supertest');

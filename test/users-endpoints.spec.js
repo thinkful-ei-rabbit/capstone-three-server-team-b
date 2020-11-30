@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const { expect } = require('chai');
 const knex = require('knex');
 const supertest = require('supertest');
@@ -7,7 +8,6 @@ const helpers = require('./test-helpers');
 describe('Users Endpoints', function () {
   let db;
 
-  // update helper for app specific fixture
   const { testUsers } = helpers.makeAppFixtures();
   const testUser = testUsers[0];
 
@@ -53,8 +53,8 @@ describe('Users Endpoints', function () {
         const userShortPassword = {
           email: 'testing@gmail.com',
           password: '1234567',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -66,8 +66,8 @@ describe('Users Endpoints', function () {
         const userLongPassword = {
           email: 'testing@gmail.com',
           password: '*'.repeat(73),
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -79,8 +79,8 @@ describe('Users Endpoints', function () {
         const userPasswordStartsSpaces = {
           email: 'testing@gmail.com',
           password: ' 1Aa!2Bb@',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -94,8 +94,8 @@ describe('Users Endpoints', function () {
         const userPasswordEndsSpaces = {
           email: 'testing@gmail.com',
           password: '1Aa!2Bb@ ',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -109,8 +109,8 @@ describe('Users Endpoints', function () {
         const userPasswordNotComplex = {
           email: 'testing@gmail.com',
           password: '11AAaabb',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -124,8 +124,8 @@ describe('Users Endpoints', function () {
         const duplicateUser = {
           email: testUser.email,
           password: '11AAaa!!',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -139,8 +139,8 @@ describe('Users Endpoints', function () {
         const newUser = {
           email: 'testing@gmail.com',
           password: '11AAaa!!',
-          first_name: 'testFName',
-          last_name: 'testLName',
+          playerName: 'testFName',
+          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
