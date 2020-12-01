@@ -74,7 +74,6 @@ describe('Auth Endpoints', function () {
         {
           user_id: testUser.id,
           playerName: testUser.playerName,
-          avatarLink: testUser.avatarLink
         },
         process.env.JWT_SECRET,
         {

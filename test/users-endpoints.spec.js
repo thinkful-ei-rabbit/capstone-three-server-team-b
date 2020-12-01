@@ -54,7 +54,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: '1234567',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -67,7 +66,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: '*'.repeat(73),
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -80,7 +78,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: ' 1Aa!2Bb@',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -95,7 +92,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: '1Aa!2Bb@ ',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -110,7 +106,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: '11AAaabb',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -125,7 +120,6 @@ describe('Users Endpoints', function () {
           email: testUser.email,
           password: '11AAaa!!',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')
@@ -140,7 +134,6 @@ describe('Users Endpoints', function () {
           email: 'testing@gmail.com',
           password: '11AAaa!!',
           playerName: 'testFName',
-          avatarLink: 'testLName',
         };
         return supertest(app)
           .post('/api/users')

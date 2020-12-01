@@ -3,6 +3,5 @@ CREATE TABLE "users" (
   "email" TEXT NOT NULL UNIQUE,
   "password" TEXT NOT NULL,
   "playerName" TEXT NOT NULL,
-  "avatarLink" TEXT NOT NULL,
   "date_created" TIMESTAMPTZ DEFAULT NOW()
 );

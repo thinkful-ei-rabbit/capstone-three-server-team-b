@@ -17,7 +17,6 @@ function makeUsersArray() {
       email: 'test-user-1@gmail.com',
       password: 'password',
       playerName: 'First1',
-      avatarLink: 'Last1',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
@@ -25,7 +24,6 @@ function makeUsersArray() {
       email: 'test-user-2@gmail.com',
       password: 'password',
       playerName: 'First2',
-      avatarLink: 'Last2',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
@@ -33,7 +31,6 @@ function makeUsersArray() {
       email: 'test-user-3@gmail.com',
       password: 'password',
       playerName: 'First3',
-      avatarLink: 'Last3',
       date_created: '2029-01-22T16:28:32.615Z',
     },
     {
@@ -41,7 +38,6 @@ function makeUsersArray() {
       email: 'test-user-4@gmail.com',
       password: 'password',
       playerName: 'First4',
-      avatarLink: 'Last4',
       date_created: '2029-01-22T16:28:32.615Z',
     },
   ];

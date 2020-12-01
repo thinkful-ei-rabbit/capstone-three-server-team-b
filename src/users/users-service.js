@@ -16,7 +16,6 @@ const UsersService = {
       .into('users')
       .returning('*')
       .then(async (user) => {
-        console.log(user);
         await db
           .insert({
             user_id: user[0].id,
@@ -50,8 +49,7 @@ const UsersService = {
     return {
       id: user.id,
       email: xss(user.email),
-      first_name: xss(user.first_name),
-      last_name: xss(user.last_name),
+      fplayerName: xss(user.playerName),
       date_created: new Date(user.date_created),
     };
   },
