@@ -9,12 +9,20 @@ const socketHandler = (socket, io) => {
 
   /* ================ USER JOIN SERVER START ==============*/
   socket.on('joinServer', (userObj) => {
+    
+    
     // define socket identity info before join
     socket.nickname = userObj.playerName;
     socket.roomNumber = userObj.room;
     socket.player_id = userObj.user_id;
     //  socket.id is auto generated and should NOT be touched
     // console.log(userObj);
+    if (ServerRooms.activeRooms[socket.roomNumber]) {
+      if (ServerRooms.activeRooms[socket.roomNumber].started === true) {
+        return socket.emit('server join denial');
+      }
+    }
+
 
     const currentUser = {
       playerName: socket.nickname,
