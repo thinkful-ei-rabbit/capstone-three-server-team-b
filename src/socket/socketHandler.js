@@ -3,6 +3,7 @@ const GameService = require('../endGame/endGame');
 const { Server } = require('socket.io');
 const ServerRooms = require('./serverRooms');
 const Deck = require('../game/deck/deck');
+const config = require('./../config')
 
 const socketHandler = (socket, io) => {
   // console.log('a user connected!');
