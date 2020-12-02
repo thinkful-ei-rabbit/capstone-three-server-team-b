@@ -277,7 +277,7 @@ const socketHandler = (socket, io) => {
     ServerRooms.rooms[socket.roomNumber].bookCount
 
     if (!ServerRooms.rooms[socket.roomNumber].bookCount)      ) {
-      bookCountInRoom = 0;
+      const bookCountInRoom = 0;
     }
 
     const roomBooksForPlayer = ServerRooms.rooms[socket.roomNumber].books;
@@ -309,7 +309,7 @@ const socketHandler = (socket, io) => {
     });
 
     // if all books collected (13), end game
-    if (bookCountInRoom >= 12) {
+    if (bookCountInRoom >= 3) {
       // all books stored client side, so just call display
 
       // ======================= GAME END =======================
