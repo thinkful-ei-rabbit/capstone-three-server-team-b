@@ -162,14 +162,14 @@ const socketHandler = (socket, io) => {
   socket.on('claim seat', (userObj) => {
     // userObj.players
     // userObj.name
-    // userObj.e seat
+    // userObj.seat
     // userObj.name
     // console.log(userObj)
 
     for (let i = 0; i < userObj.roomPlayers.length; i++) {
       const user = userObj.roomPlayers[i];
       if (user.playerName !== userObj.name) {
-        // console.log(`emitted to ${user.playerName}`);
+        // emit to all users in room
         io.to(user.id).emit('seat chosen', {
           seat: userObj.seat,
           name: userObj.name,
@@ -177,22 +177,7 @@ const socketHandler = (socket, io) => {
         });
       }
     }
-    // socket.broadcast.to().emit(resObj)
   });
-
-  // socket.on('book found', (requestObj) => {
-  //     const booksForPlayerInRoom = ServerRooms.rooms[socket.roomNumber].books[socket.id];
-  //     if (booksForPlayerInRoom === undefined) {
-  //         booksForPlayerInRoom = 1;
-  //     }
-  //     // assume player has a book? client validate or server validate?
-  //     // probably client
-
-  //     // user user context info to update database with a book found?
-
-  //     booksForPlayerInRoom += 1;
-
-  // })
 
   socket.on('draw a card from the deck', (userObj) => {
     const { cardCount, playerName } = userObj;
@@ -210,7 +195,6 @@ const socketHandler = (socket, io) => {
   });
 
   // ======================= GAMEPLAY =======================
-
   // SERVER RESPONSES
 
   socket.on('request rank from player', (requestObj) => {
@@ -274,8 +258,6 @@ const socketHandler = (socket, io) => {
     const overMaxIndexCheck =
       indexOfPlayer + 1 >= serverPlayers.length ? 0 : indexOfPlayer + 1;
     const newPlayer = serverPlayers[overMaxIndexCheck];
-    // console.log(player);
-    // console.log(newPlayer);
 
     for (let i = 0; i < serverPlayers.length; i++) {
       if (serverPlayers[i].socket_id == newPlayer.socket_id) {
@@ -292,8 +274,9 @@ const socketHandler = (socket, io) => {
   // ======================= GAMEPLAY END =======================
   socket.on('book found', (booksObj) => {
     const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+
     let bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
-    console.log(ServerRooms)
+
     if (!bookCountInRoom) {
       bookCountInRoom = 0;
     }
@@ -311,28 +294,19 @@ const socketHandler = (socket, io) => {
       }
     }
 
-    // check to see if all books are found
-    // cards taken out of hand, do something with it?
-
+    // update other player bookcount and cardcounts
     socket.to(socket.roomNumber).emit('update other player books', {
       playerName,
       playerBooks,
     });
 
-    // add books to room
-
-    // ServerRooms.rooms[socket.roomNumber].books.length > 12
     io.to(socket.roomNumber).emit('update other player card count', {
       newCount: playerCardCount,
       playerName: playerName,
     });
 
-    // if so, we'll end the game
-    // io.to(room).emit('game end', someInfo)
-    console.log(bookCountInRoom)
+    // if all books collected (13), end game
     if (bookCountInRoom >= 13) {
-      // console.log(Object.keys(ServerRooms.rooms[socket.roomNumber].books))
-      // 3 sets placed or more
       // all books stored client side, so just call display
 
       // ======================= GAME END =======================

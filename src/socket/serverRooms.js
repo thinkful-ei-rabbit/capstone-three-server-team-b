@@ -57,7 +57,7 @@ class RoomConstruct {
             const playerObj = this.rooms[room].players.find(el => el.socket_id === id);
             const indexOfPlayerObj = this.rooms[room].players.indexOf(playerObj);
             if (this.activeRooms[room].capacity === 1) {
-                // 1 - 1 = 0, delete rooms
+                // 1 - 1 = 0, delete room
                 if (this.activeRooms[room]) {
                     delete this.activeRooms[room];
                 }
