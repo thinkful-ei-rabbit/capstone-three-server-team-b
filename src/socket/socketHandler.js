@@ -10,8 +10,8 @@ const socketHandler = (socket, io) => {
 
   /* ================ USER JOIN SERVER START ==============*/
   socket.on('joinServer', (userObj) => {
-    
-    
+
+
     // define socket identity info before join
     socket.nickname = userObj.playerName;
     socket.roomNumber = userObj.room;
@@ -144,7 +144,7 @@ const socketHandler = (socket, io) => {
     // set first turn randomly
     const randomIndex = Math.floor(Math.random() * players.length);
     const randomID = players[randomIndex].id;
-    
+
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === randomID) {
         // emit your turn
@@ -272,8 +272,8 @@ const socketHandler = (socket, io) => {
   });
   // ======================= GAMEPLAY END =======================
   socket.on('book found', (booksObj) => {
-    const { cardsInBook, playerBook, playerName, playerCardCount } = booksObj;
-    
+    const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+
     ServerRooms.rooms[socket.roomNumber].bookCount
 
     if (!ServerRooms.rooms[socket.roomNumber].bookCount) {
@@ -282,23 +282,25 @@ const socketHandler = (socket, io) => {
 
     const roomBooksForPlayer = ServerRooms.rooms[socket.roomNumber].books;
 
-    for (let i = 0; i < playerBook.length; i++) {
+    for (let i = 0; i < playerBooks.length; i++) {
       // put each card in book set
       if (roomBooksForPlayer[socket.nickname]) {
-        roomBooksForPlayer[socket.nickname].push(playerBook[i]);
-        ServerRooms.rooms[socket.roomNumber].bookCount++;
+        if (!roomBooksForPlayer[socket.nickname].includes(playerBooks[i])) {
+          roomBooksForPlayer[socket.nickname].push(playerBooks[i]);
+          ServerRooms.rooms[socket.roomNumber].bookCount++;
+        }
       } else {
-        roomBooksForPlayer[socket.nickname] = [playerBook[i]];
+        roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
         ServerRooms.rooms[socket.roomNumber].bookCount++;
       }
     }
-  
-    console.log('=================================================')
-    console.log(ServerRooms.rooms[socket.roomNumber])
-    console.log('=================================================')
-    console.log(socket.roomNumber);
-    console.log(ServerRooms.rooms[socket.roomNumber].bookCount);
-    console.log('=================================================')
+
+    // console.log('=================================================')
+    // console.log(ServerRooms.rooms[socket.roomNumber])
+    // console.log('=================================================')
+    // console.log(socket.roomNumber);
+    // console.log(ServerRooms.rooms[socket.roomNumber].bookCount);
+    // console.log('=================================================')
 
     // update other player bookcount and cardcounts
     socket.to(socket.roomNumber).emit('update other player books', {
