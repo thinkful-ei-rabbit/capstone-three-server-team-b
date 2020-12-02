@@ -293,6 +293,9 @@ const socketHandler = (socket, io) => {
       }
     }
   
+    console.log('=================================================')
+    console.log(bookCountInRoom);
+    console.log('=================================================')
 
     // update other player bookcount and cardcounts
     socket.to(socket.roomNumber).emit('update other player books', {
@@ -306,7 +309,7 @@ const socketHandler = (socket, io) => {
     });
 
     // if all books collected (13), end game
-    if (bookCountInRoom >= 13) {
+    if (bookCountInRoom >= 12) {
       // all books stored client side, so just call display
 
       // ======================= GAME END =======================
