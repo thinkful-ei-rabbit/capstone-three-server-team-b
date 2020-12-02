@@ -274,9 +274,9 @@ const socketHandler = (socket, io) => {
   socket.on('book found', (booksObj) => {
     const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
     
-    let bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
+    ServerRooms.rooms[socket.roomNumber].bookCount
 
-    if (!bookCountInRoom) {
+    if (!ServerRooms.rooms[socket.roomNumber].bookCount)      ) {
       bookCountInRoom = 0;
     }
 
@@ -286,15 +286,15 @@ const socketHandler = (socket, io) => {
       // put each card in book set
       if (roomBooksForPlayer[socket.nickname]) {
         roomBooksForPlayer[socket.nickname].push(playerBooks[i]);
-        bookCountInRoom++;
+        ServerRooms.rooms[socket.roomNumber].bookCount++;
       } else {
         roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
-        bookCountInRoom++;
+        ServerRooms.rooms[socket.roomNumber].bookCount++;
       }
     }
   
     console.log('=================================================')
-    console.log(bookCountInRoom);
+    console.log(ServerRooms.rooms[socket.roomNumber].bookCount);
     console.log('=================================================')
 
     // update other player bookcount and cardcounts
