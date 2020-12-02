@@ -13,7 +13,8 @@ class RoomConstruct {
             ],
             books: {
                 // id: count of books
-            }
+            },
+            bookCount: 0,
         };
         this.activeRooms[id] = {
             capacity: 0,

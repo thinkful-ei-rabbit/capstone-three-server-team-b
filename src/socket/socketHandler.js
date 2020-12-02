@@ -17,9 +17,10 @@ const socketHandler = (socket, io) => {
     socket.roomNumber = userObj.room;
     socket.player_id = userObj.user_id;
     //  socket.id is auto generated and should NOT be touched
-    // console.log(userObj);
     if (ServerRooms.activeRooms[socket.roomNumber]) {
+      // check to see if room exists
       if (ServerRooms.activeRooms[socket.roomNumber].started === true) {
+        // check to see if room is started
         return socket.emit('server join denial');
       }
     }
@@ -34,15 +35,15 @@ const socketHandler = (socket, io) => {
     };
 
     if (ServerRooms.rooms[userObj.room] === undefined) {
+      // add room if there is none
       ServerRooms.addRoom(userObj.room);
-      // ServerRooms.adjustRoomCapacity(userObj.room, true);
       ServerRooms.addPlayerToRoom(userObj.room, currentUser);
     } else {
       if (ServerRooms.rooms[userObj.room].capacity === 4) {
+        // 4 players in room already
         socket.emit('gameFull', 'The game you tried to join is full.');
         return;
       } else {
-        // ServerRooms.adjustRoomCapacity(userObj.room, true);
         ServerRooms.addPlayerToRoom(userObj.room, currentUser);
       }
     }
@@ -116,7 +117,6 @@ const socketHandler = (socket, io) => {
     // create new deck
     deck.shuffle();
     // shuffle new deck
-    // console.log(deck);
 
     // distribute cards to players
     for (let i = 0; i < players.length; i++) {
@@ -144,8 +144,7 @@ const socketHandler = (socket, io) => {
     // set first turn randomly
     const randomIndex = Math.floor(Math.random() * players.length);
     const randomID = players[randomIndex].id;
-    // io.to(players[randomIndex].id).emit('your turn');
-    // console.log(players);
+    
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === randomID) {
         // emit your turn
@@ -274,7 +273,7 @@ const socketHandler = (socket, io) => {
   // ======================= GAMEPLAY END =======================
   socket.on('book found', (booksObj) => {
     const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
-
+    
     let bookCountInRoom = ServerRooms.rooms[socket.roomNumber].bookCount;
 
     if (!bookCountInRoom) {
@@ -293,6 +292,7 @@ const socketHandler = (socket, io) => {
         bookCountInRoom++;
       }
     }
+  
 
     // update other player bookcount and cardcounts
     socket.to(socket.roomNumber).emit('update other player books', {
