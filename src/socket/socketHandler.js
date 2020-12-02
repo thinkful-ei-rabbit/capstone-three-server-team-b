@@ -272,7 +272,7 @@ const socketHandler = (socket, io) => {
   });
   // ======================= GAMEPLAY END =======================
   socket.on('book found', (booksObj) => {
-    const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
+    const { cardsInBook, playerBook, playerName, playerCardCount } = booksObj;
     
     ServerRooms.rooms[socket.roomNumber].bookCount
 
@@ -282,18 +282,21 @@ const socketHandler = (socket, io) => {
 
     const roomBooksForPlayer = ServerRooms.rooms[socket.roomNumber].books;
 
-    for (let i = 0; i < playerBooks.length; i++) {
+    for (let i = 0; i < playerBook.length; i++) {
       // put each card in book set
       if (roomBooksForPlayer[socket.nickname]) {
-        roomBooksForPlayer[socket.nickname].push(playerBooks[i]);
+        roomBooksForPlayer[socket.nickname].push(playerBook[i]);
         ServerRooms.rooms[socket.roomNumber].bookCount++;
       } else {
-        roomBooksForPlayer[socket.nickname] = [playerBooks[i]];
+        roomBooksForPlayer[socket.nickname] = [playerBook[i]];
         ServerRooms.rooms[socket.roomNumber].bookCount++;
       }
     }
   
     console.log('=================================================')
+    console.log(ServerRooms.rooms[socket.roomNumber])
+    console.log('=================================================')
+    console.log(socket.roomNumber);
     console.log(ServerRooms.rooms[socket.roomNumber].bookCount);
     console.log('=================================================')
 
