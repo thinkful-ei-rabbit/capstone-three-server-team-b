@@ -155,8 +155,8 @@ When your new project is ready for deployment, add a new Heroku application with
 
 <!-- ### We're working dilligently to incorporate these next user stories! -->
 
-- Returning users can edit their profile
-- Users can view a score board
+- Returning users can view and edit their profile
+- All users can view the leaderboard
 
 ## About the Devs
 
