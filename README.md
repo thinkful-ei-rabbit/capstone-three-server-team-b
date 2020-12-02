@@ -65,7 +65,7 @@ Here's the backend which serves our [Go Fish Game Application](https://capstone-
 
 <!-- socket.io endpoints explained here -->
 
-- `socket.on` establishes a server connection
+- `socket.on('connection', () => {})` establishes a server connection, in which event listeners can be tied
 - At the start of the game users join the server:
 
 ```
@@ -86,18 +86,19 @@ Here's the backend which serves our [Go Fish Game Application](https://capstone-
 }
 ```
 
-- `socket.emit` sends a message to either all users in the game or a specific user in the game
+- `socket.emit('example', {userInfo})` sends an 'example' event with the object containing userInfo.
 - For example, when a player asks another player for a card:
 
 ```
 {
-    //`io.to` targets that player `.emit` sends the specific response, which is handled by the front end
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
       value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`,
     });
 }
 ```
+We use Socket.io to send a 'messageResponse' event with an object containing data about user actions in the game.
+io.to(some-room-id).emit('example') sends a message to all users in that room, configured in Socket.io
 
 ## Tech Stack
 
@@ -107,8 +108,6 @@ Here's the backend which serves our [Go Fish Game Application](https://capstone-
   - Authentication using JWT
   - RESTful Api
 - Socket.io
-- HTML5
-- CSS3
 
 ### Testing
 
@@ -160,7 +159,11 @@ When your new project is ready for deployment, add a new Heroku application with
 
 ## About the Devs
 
--[Caleb](https://github.com/cabejackson) -[Harry](https://github.com/cabejackson) -[Jason](https://github.com/cabejackson) -[Malik](https://github.com/cabejackson) -[Michael](https://github.com/cabejackson)
+-[Caleb](https://github.com/cabejackson)
+-[Harry](https://github.com/fumbl3b) 
+-[Jason](https://github.com/zompocalypse) 
+-[Malik](https://github.com/M-DeJean) 
+-[Michael](https://github.com/michaeljsliger)
 
 ## Special Thanks
 
