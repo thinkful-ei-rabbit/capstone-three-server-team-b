@@ -276,7 +276,7 @@ const socketHandler = (socket, io) => {
     
     ServerRooms.rooms[socket.roomNumber].bookCount
 
-    if (!ServerRooms.rooms[socket.roomNumber].bookCount)      ) {
+    if (!ServerRooms.rooms[socket.roomNumber].bookCount) {
       const bookCountInRoom = 0;
     }
 
