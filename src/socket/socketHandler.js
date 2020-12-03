@@ -91,7 +91,7 @@ const socketHandler = (socket, io) => {
   });
 
   socket.on('typing', (data) => {
-    socket.broadcast.emit('typing', data);
+    io.to(socket.roomNumber).emit('typing', data);
   });
 
   socket.on('gather list', (message) => {
