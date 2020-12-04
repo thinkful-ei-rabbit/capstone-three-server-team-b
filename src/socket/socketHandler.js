@@ -3,15 +3,13 @@ const GameService = require('../endGame/endGame');
 const { Server } = require('socket.io');
 const ServerRooms = require('./serverRooms');
 const Deck = require('../game/deck/deck');
-const config = require('./../config')
+const config = require('./../config');
 
 const socketHandler = (socket, io) => {
   // console.log('a user connected!');
 
   /* ================ USER JOIN SERVER START ==============*/
   socket.on('joinServer', (userObj) => {
-
-
     // define socket identity info before join
     socket.nickname = userObj.playerName;
     socket.roomNumber = userObj.room;
@@ -24,7 +22,6 @@ const socketHandler = (socket, io) => {
         return socket.emit('server join denial');
       }
     }
-
 
     const currentUser = {
       playerName: socket.nickname,
@@ -127,7 +124,6 @@ const socketHandler = (socket, io) => {
       while (hand.hand.length < 7) {
         hand.hand.push(deck.draw());
       }
-      console.log(hand)
 
       // for (let j = 0; j < players.length; j++) {
       //     if (players[j].id !== players[i].id) {
@@ -205,8 +201,17 @@ const socketHandler = (socket, io) => {
     // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq === 1 ? 'Ace' :
-      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}.`,
+      value: `${asker.name} is asking  ${requested.requestedName} for a ${
+        rankReq === 1
+          ? 'Ace'
+          : rankReq === 11
+          ? 'Jack'
+          : rankReq === 12
+          ? 'Queen'
+          : rankReq === 13
+          ? 'King'
+          : rankReq
+      }.`,
     });
 
     socket.broadcast
@@ -220,8 +225,17 @@ const socketHandler = (socket, io) => {
     // message update
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${requested.requestedName} did not have a  ${rankReq === 1 ? 'Ace' :
-      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}, go fish ${asker.name}!`,
+      value: `${requested.requestedName} did not have a  ${
+        rankReq === 1
+          ? 'Ace'
+          : rankReq === 11
+          ? 'Jack'
+          : rankReq === 12
+          ? 'Queen'
+          : rankReq === 13
+          ? 'King'
+          : rankReq
+      }, go fish ${asker.name}!`,
     });
 
     socket.broadcast.to(asker.user_id).emit('go fish', requestObj);
@@ -233,8 +247,17 @@ const socketHandler = (socket, io) => {
     // message update
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${requested.requestedName} had a  ${rankReq === 1 ? 'Ace' :
-      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}, good guess ${asker.name}!`,
+      value: `${requested.requestedName} had a  ${
+        rankReq === 1
+          ? 'Ace'
+          : rankReq === 11
+          ? 'Jack'
+          : rankReq === 12
+          ? 'Queen'
+          : rankReq === 13
+          ? 'King'
+          : rankReq
+      }, good guess ${asker.name}!`,
     });
     // card count update for requested
     io.to(socket.roomNumber).emit('update other player card count', {
@@ -278,7 +301,7 @@ const socketHandler = (socket, io) => {
   socket.on('book found', (booksObj) => {
     const { cardsInBook, playerBooks, playerName, playerCardCount } = booksObj;
 
-    ServerRooms.rooms[socket.roomNumber].bookCount
+    ServerRooms.rooms[socket.roomNumber].bookCount;
 
     if (!ServerRooms.rooms[socket.roomNumber].bookCount) {
       const bookCountInRoom = 0;
@@ -298,13 +321,6 @@ const socketHandler = (socket, io) => {
         ServerRooms.rooms[socket.roomNumber].bookCount++;
       }
     }
-
-    // console.log('=================================================')
-    // console.log(ServerRooms.rooms[socket.roomNumber])
-    // console.log('=================================================')
-    // console.log(socket.roomNumber);
-    // console.log(ServerRooms.rooms[socket.roomNumber].bookCount);
-    // console.log('=================================================')
 
     // update other player bookcount and cardcounts
     socket.to(socket.roomNumber).emit('update other player books', {
