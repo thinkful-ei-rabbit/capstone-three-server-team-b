@@ -97,6 +97,7 @@ Here's the backend which serves our [Go Fish Game Application](https://capstone-
     });
 }
 ```
+
 We use Socket.io to send a 'messageResponse' event with an object containing data about user actions in the game.
 io.to(some-room-id).emit('example') sends a message to all users in that room, configured in Socket.io
 
@@ -159,11 +160,7 @@ When your new project is ready for deployment, add a new Heroku application with
 
 ## About the Devs
 
--[Caleb](https://github.com/cabejackson)
--[Harry](https://github.com/fumbl3b) 
--[Jason](https://github.com/zompocalypse) 
--[Malik](https://github.com/M-DeJean) 
--[Michael](https://github.com/michaeljsliger)
+-[Caleb Jackson](https://github.com/cabejackson) -[Harry Winkler](https://github.com/fumbl3b) -[Jason Stankevich](https://github.com/zompocalypse) -[Malik DeJean](https://github.com/M-DeJean) -[Michael Sliger](https://github.com/michaeljsliger)
 
 ## Special Thanks
 
