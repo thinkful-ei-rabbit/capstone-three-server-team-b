@@ -127,6 +127,7 @@ const socketHandler = (socket, io) => {
       while (hand.hand.length < 7) {
         hand.hand.push(deck.draw());
       }
+      console.log(hand)
 
       // for (let j = 0; j < players.length; j++) {
       //     if (players[j].id !== players[i].id) {
@@ -204,7 +205,8 @@ const socketHandler = (socket, io) => {
     // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq}.`,
+      value: `${asker.name} is asking  ${requested.requestedName} for a ${rankReq === 1 ? 'Ace' :
+      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}.`,
     });
 
     socket.broadcast
@@ -218,7 +220,8 @@ const socketHandler = (socket, io) => {
     // message update
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${requested.requestedName} did not have a  ${rankReq}, go fish ${asker.name}!`,
+      value: `${requested.requestedName} did not have a  ${rankReq === 1 ? 'Ace' :
+      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}, go fish ${asker.name}!`,
     });
 
     socket.broadcast.to(asker.user_id).emit('go fish', requestObj);
@@ -230,7 +233,8 @@ const socketHandler = (socket, io) => {
     // message update
     io.to(socket.roomNumber).emit('messageResponse', {
       user: 'Server Message',
-      value: `${requested.requestedName} had a  ${rankReq}, good guess ${asker.name}!`,
+      value: `${requested.requestedName} had a  ${rankReq === 1 ? 'Ace' :
+      rankReq === 11 ? 'Jack' : rankReq === 12 ? 'Queen' : rankReq === 13 ? 'King' : rankReq}, good guess ${asker.name}!`,
     });
     // card count update for requested
     io.to(socket.roomNumber).emit('update other player card count', {
