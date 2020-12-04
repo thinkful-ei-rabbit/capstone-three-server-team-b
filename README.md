@@ -1,6 +1,6 @@
 # Go Fish Server!
 
-Here's the backend which serves our [Go Fish Game Application](https://capstone-3-client-deploy.vercel.app/)! The backend manages endpoints that use CRUD methods. You can learn more about the Front End code [here](https://github.com/thinkful-ei-rabbit/capstone-three-client-team-b)
+Here's the backend which serves our [Go Fish Game Application](https://gofish-team2.vercel.app/)! The backend manages endpoints that use CRUD methods. You can learn more about the Front End code [here](https://github.com/thinkful-ei-rabbit/capstone-three-client-team-b)
 
 ## Table of Contents
 
