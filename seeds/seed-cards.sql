@@ -1,3 +1,9 @@
+-- UNUSED
+-- UNUSED
+-- UNUSED
+-- UNUSED
+-- UNUSED
+-- UNUSED
 INSERT INTO "cards" ("id", "rank", "name", "suit") 
 VALUES 
     (0, 1, 'Ace of Clubs', 'Clubs'),
@@ -52,3 +58,4 @@ VALUES
     (49, 11, 'Jack of Spades', 'Spades'),
     (50, 12, 'Queen of Spades', 'Spades'),
     (51, 13, 'King of Spades', 'Spades');
+

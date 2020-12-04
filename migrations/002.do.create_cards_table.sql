@@ -1,3 +1,8 @@
+-- UNUSED
+-- UNUSED
+-- UNUSED
+-- UNUSUD
+-- UNUSED
 CREATE TABLE "cards" (
     "id" SERIAL PRIMARY KEY,
     "rank" TEXT NOT NULL,
