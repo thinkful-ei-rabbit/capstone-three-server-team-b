@@ -156,8 +156,8 @@ const socketHandler = (socket, io) => {
   });
 
   socket.on('leave table', () => {
-    socket.disconnect()
-  })
+    socket.disconnect();
+  });
 
   socket.on('claim seat', (userObj) => {
     // userObj.players
@@ -203,9 +203,9 @@ const socketHandler = (socket, io) => {
     const rankReq = requestObj.rankReq;
 
     // console.log(`does ${requested} have a ${rankReq}? Asking now...`)
-    io.to(socket.roomNumber).emit('messageResponse', {
+    io.to(socket.roomNumber).emit('gameMessage', {
       user: 'Server Message',
-      value: `${asker.name} is asking  ${requested.requestedName} for a ${
+      value: `${asker.name} is asking ${requested.requestedName} for a ${
         rankReq === 1
           ? 'Ace'
           : rankReq === 11
@@ -227,9 +227,9 @@ const socketHandler = (socket, io) => {
     const { asker, requested, rankReq, CARD } = requestObj;
 
     // message update
-    io.to(socket.roomNumber).emit('messageResponse', {
+    io.to(socket.roomNumber).emit('gameMessage', {
       user: 'Server Message',
-      value: `${requested.requestedName} did not have a  ${
+      value: `${requested.requestedName} did not have a ${
         rankReq === 1
           ? 'Ace'
           : rankReq === 11
@@ -249,9 +249,9 @@ const socketHandler = (socket, io) => {
     const { requested, asker, rankReq, CARD, cardCount } = gameObj;
 
     // message update
-    io.to(socket.roomNumber).emit('messageResponse', {
+    io.to(socket.roomNumber).emit('gameMessage', {
       user: 'Server Message',
-      value: `${requested.requestedName} had a  ${
+      value: `${requested.requestedName} had a ${
         rankReq === 1
           ? 'Ace'
           : rankReq === 11
