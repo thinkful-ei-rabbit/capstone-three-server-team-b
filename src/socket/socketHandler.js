@@ -369,7 +369,6 @@ const socketHandler = (socket, io) => {
   });
 
   socket.on('game over', () => {
-    console.log('game over');
     io.to(socket.roomNumber).emit('force end');
   });
 
