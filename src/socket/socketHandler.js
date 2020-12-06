@@ -155,6 +155,10 @@ const socketHandler = (socket, io) => {
     }
   });
 
+  socket.on('leave table', () => {
+    socket.disconnect()
+  })
+
   socket.on('claim seat', (userObj) => {
     // userObj.players
     // userObj.name
